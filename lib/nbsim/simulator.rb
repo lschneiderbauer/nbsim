@@ -7,7 +7,7 @@ module Nbsim
 # is the so called 'Verlet Algorithm'.
 #
 class Simulator
-	G = 40		# Gravitational constant
+	G = 20		# Gravitational constant
 	H = 0.1		# Step size
 	THRESHOLD = 100	# Maximum square distance, where force stays constant (because of numerical divergences)
 
