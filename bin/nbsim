@@ -1,0 +1,25 @@
+#!/usr/bin/ruby18
+
+# set process name
+$0='nbsim'
+
+require 'pathname'
+# do some stuff to get it running from symlinks etc.
+ABS_PATH = Pathname.new(__FILE__).realpath.dirname.parent
+$LOAD_PATH << ABS_PATH + "lib/"
+
+
+
+require 'nbsim'
+
+# visualize
+unless $hasnot_qt
+
+	app = Qt::Application.new(ARGV)
+
+	widget = Nbsim::Main_qt.new
+	widget.show
+
+	app.exec
+
+end
