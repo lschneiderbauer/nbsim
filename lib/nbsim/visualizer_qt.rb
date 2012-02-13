@@ -34,18 +34,18 @@ class Visualizer_qt < Qt::Widget
 		painter.pen = Qt::Pen.new(Qt::SolidLine)
 		painter.brush = Qt::Brush.new(Qt::black)
 
-		#dx = 300 - @data.coord(0,0,@t)
-		#dy = 300 - @data.coord(0,1,@t)
 
-		dx = 300
-		dy = 300
+		dx,dy = *@data.get_center_of_mass(@t)
+		dx -= self.size.width/2
+		dy -= self.size.height/2
+
 
 		(0..@data.n-1).each do |i|
 
 			x,y = *@data.get_coords(i,@t)
 			
-			x = x + dy
-			y = y + dy
+			x -= dx
+			y -= dy
 
 			rec = Qt::Rect.new(x-3,y-3,3*2,3*2)
 			painter.draw_ellipse(rec)
