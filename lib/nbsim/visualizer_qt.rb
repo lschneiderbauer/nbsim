@@ -42,9 +42,11 @@ class Visualizer_qt < Qt::Widget
 
 		(0..@data.n-1).each do |i|
 
-			x = @data.coord(i,0,@t) + dx
-			y = @data.coord(i,1,@t) + dy
+			x,y = *@data.get_coords(i,@t)
 			
+			x = x + dy
+			y = y + dy
+
 			rec = Qt::Rect.new(x-3,y-3,3*2,3*2)
 			painter.draw_ellipse(rec)
 		end

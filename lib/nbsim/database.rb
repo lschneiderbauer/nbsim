@@ -71,22 +71,21 @@ class Database
 	end
 
 
-	# Gets a specific coordinate from a specific particle in a specific time.
+	# Gets an array of length of the number of degrees of freedom set in +Database.new+.
+	# with the coordinates from a specific particle in a specific time.
 	#
 	# [particle]	Selects the particle.
 	# 		The allowed range is 0 to the number of particles set
 	# 		in +Database.new+ minus 1.
 	#
-	# [dim]		Selects the dimension. (e.g. 0 for x, 1 for y, ...)
-	# 		The allowed range is 0 to to the number of degrees of
-	# 		freedom set in +Database.new+ minus 1.
-	#
 	# [time]	Selects the time.
 	# 		The allowed range is 0 to to the number of timesteps
 	# 		set in +Database.new+ minus 1.
 	#
-	def coord(particle, dim, time)
-		@data[time][@dof*dim + particle]
+	def get_coords(particle, time)
+		(0..@dof-1).map do |i|
+			@data[time][@dof*i + particle]
+		end
 	end
 
 
