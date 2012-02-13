@@ -48,10 +48,30 @@ class Database
 		check_dimension(vec)
 
 		# see data format
-		(0..@dof-1).each { |i| @data[0][i*@n+particle] = vec[i].to_f; }
+		(0..@dof-1).each { |i| @data[0][i*@n+particle] = vec[i].to_f }
 
 		# init velocity = zero
-		@data[1] = @data[0]
+		@data[1] = @data[0].clone
+	end
+
+	# Sets the initial (carthesian) velocities for a particle
+	# identified by its number, so
+	#
+	# [particle]	Selects, which particle's coordinates are set.
+	# 		The allowed range is 0 to the number of particles set
+	# 		in +Database.new+ minus 1.
+	#
+	# [vec]		Expects an array of initial (carthesian) velocity components
+	# 		for the particle. The array's dimension must be as the number
+	# 		of degrees of freedom given in +Database.new+
+	#
+	def set_init_velo(particle, vec)
+		check_particle(particle)
+		check_dimension(vec)
+
+		(0..@dof-1).each do |i|
+			@data[1][i*@n+particle] = @data[0][i*@n+particle] + vec[i].to_f
+		end
 	end
 
 	# Sets the mass for a particle
