@@ -71,7 +71,7 @@ class Database
 	end
 
 
-	# Gets an array of length of the number of degrees of freedom set in +Database.new+.
+	# Returns an array of length of the number of degrees of freedom set in +Database.new+
 	# with the coordinates from a specific particle in a specific time.
 	#
 	# [particle]	Selects the particle.
@@ -83,8 +83,29 @@ class Database
 	# 		set in +Database.new+ minus 1.
 	#
 	def get_coords(particle, time)
+		raise ArgumentError("Particle identifier must be wrong.") unless (0..@n-1).include? particle
+		raise ArgumentError("Time not in range of data.") unless (0..@timesteps-1).include? time
+
 		(0..@dof-1).map do |i|
 			@data[time][@dof*i + particle]
+		end
+	end
+
+	# Returns an array of length of the number of degrees of freedom set in +Database.new+
+	# with the coordinates of the center of mass in a specific time.
+	#
+	# [time]	Selects the time.
+	# 		The allowed range is 0 to to the number of timesteps
+	# 		set in +Database.new+ minus 1.
+	#
+	def get_center_of_mass(time)
+		raise ArgumentError("Time not in range of data.") unless (0..@timesteps-1).include? time
+
+		m = @m.inject(:+)
+		pvs = (0..@n-1).map { |i| self.get_coords(i,time) }
+		
+		(0..@dof-1).map do |q|
+			(0..@n-1).inject(0) {|sum,n| sum + @m[n] * pvs[n][q]} / m
 		end
 	end
 
