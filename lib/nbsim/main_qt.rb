@@ -11,15 +11,12 @@ class Main_qt < Qt::Widget
 		# create data
 		timesteps = 10000
 		n = 3
-		dof = 2
+		dof = 3
 		 
 		data = Nbsim::Database.new(timesteps, n, dof)
-		#data.set_init_cond(0, [100, -90, 0])
-		#data.set_init_cond(1, [300, -40, 0])
-		#data.set_init_cond(2, [0, 0, 0])
-		data.set_init_cond(0, [100, -90])
-		data.set_init_cond(1, [300, -40])
-		data.set_init_cond(2, [0, 0])
+		data.set_init_cond(0, [100, -90, 0])
+		data.set_init_cond(1, [300, -40, 0])
+		data.set_init_cond(2, [0, 0, 0])
 		data.set_mass(0, 1)
 		data.set_mass(1, 5)
 		data.set_mass(2, 8)
