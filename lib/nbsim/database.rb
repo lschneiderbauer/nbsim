@@ -136,15 +136,15 @@ class Database
 private
 
 	def check_time(time)
-		raise ArgumentError("Time not in range of data.") unless (0..@timesteps-1).include? time
+		raise ArgumentError.new("Time (#{time}) not in range of data.") unless (0..@timesteps-1).include? time
 	end
 
 	def check_particle(particle)
-		raise ArgumentError("Particle identifier must be wrong.") unless (0..@n-1).include? particle
+		raise ArgumentError.new("Particle identifier (#{particle}) must be wrong.") unless (0..@n-1).include? particle
 	end	
 
 	def check_dimension(vec)
-		raise ArgumentError("Position vector has wrong dimension.") unless vec.length == @dof
+		raise ArgumentError.new("Position vector (#{vec}) has wrong dimension.") unless vec.length == @dof
 	end
 
 end
