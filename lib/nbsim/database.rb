@@ -44,9 +44,8 @@ class Database
 	#
 	# The initial conditions are set, so that the initial velocity is zero.
 	def set_init_cond(particle, vec)
-
-		raise ArgumentError("Particle identifier must be wrong.") unless (0..@n-1).include? particle
-		raise ArgumentError("Position vector has wrong dimension.") unless vec.length == @dof
+		check_particle(particle)
+		check_dimension(vec)
 
 		# see data format
 		(0..@dof-1).each { |i| @data[0][i*@n+particle] = vec[i].to_f; }
@@ -65,7 +64,7 @@ class Database
 	# [mass]	Excepts a Numeric, which represents the mass for the particle
 	#
 	def set_mass(particle, mass)
-		raise ArgumentError("Particle identifier must be wrong.") unless (0..@n-1).include? particle
+		check_particle(particle)
 
 		@m[particle] = mass
 	end
@@ -83,8 +82,8 @@ class Database
 	# 		set in +Database.new+ minus 1.
 	#
 	def get_coords(particle, time)
-		raise ArgumentError("Particle identifier must be wrong.") unless (0..@n-1).include? particle
-		raise ArgumentError("Time not in range of data.") unless (0..@timesteps-1).include? time
+		check_particle(particle)
+		check_time(time)
 
 		(0..@dof-1).map do |i|
 			@data[time][@n*i + particle]
@@ -99,7 +98,7 @@ class Database
 	# 		set in +Database.new+ minus 1.
 	#
 	def get_center_of_mass(time)
-		raise ArgumentError("Time not in range of data.") unless (0..@timesteps-1).include? time
+		check_time(time)
 
 		m = @m.inject(:+)
 		pvs = (0..@n-1).map { |i| self.get_coords(i,time) }
@@ -132,6 +131,20 @@ class Database
 
 	def to_s
 		@data.to_s
+	end
+
+private
+
+	def check_time(time)
+		raise ArgumentError("Time not in range of data.") unless (0..@timesteps-1).include? time
+	end
+
+	def check_particle(particle)
+		raise ArgumentError("Particle identifier must be wrong.") unless (0..@n-1).include? particle
+	end	
+
+	def check_dimension(vec)
+		raise ArgumentError("Position vector has wrong dimension.") unless vec.length == @dof
 	end
 
 end
