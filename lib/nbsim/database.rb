@@ -49,7 +49,7 @@ class Database
 		raise ArgumentError("Position vector has wrong dimension.") unless vec.length == @dof
 
 		# see data format
-		(0..@dof).each { |i| @data[0][i*@dof+particle] = vec[i].to_f; }
+		(0..@dof-1).each { |i| @data[0][i*@n+particle] = vec[i].to_f; }
 
 		# init velocity = zero
 		@data[1] = @data[0]
@@ -87,7 +87,7 @@ class Database
 		raise ArgumentError("Time not in range of data.") unless (0..@timesteps-1).include? time
 
 		(0..@dof-1).map do |i|
-			@data[time][@dof*i + particle]
+			@data[time][@n*i + particle]
 		end
 	end
 
@@ -103,7 +103,7 @@ class Database
 
 		m = @m.inject(:+)
 		pvs = (0..@n-1).map { |i| self.get_coords(i,time) }
-		
+
 		(0..@dof-1).map do |q|
 			(0..@n-1).inject(0) {|sum,n| sum + @m[n] * pvs[n][q]} / m
 		end

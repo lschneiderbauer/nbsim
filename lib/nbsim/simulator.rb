@@ -7,8 +7,9 @@ module Nbsim
 # is the so called 'Verlet Algorithm'.
 #
 class Simulator
-	G = 15		# Gravitational constant
+	G = 40		# Gravitational constant
 	H = 0.1		# Step size
+	THRESHOLD = 100	# Maximum square distance, where force stays constant (because of numerical divergences)
 
 	# Initializes the simulator, with following parameters:
 	#
@@ -37,11 +38,12 @@ class Simulator
 	# the formula for function f, where u'' = f(u,i,j)
 	# for a gravitational force (1/r^2) acting on each other is
 	#
-	# f_j = - G * Sum(over l) m_l * (q_j-q_3k+l) * 1/r_kl^(3/2)
-	# where k = j div (degrees of freedom)
-	# and l = set of particle-indices without k
+	# f_j = - G * Sum(over l) m_l * (q_j-q_3k+l) * 1/r_zl^(3/2)
+	# where k = j div (number of particles)
+	# and z = j mod (number of particles)
+	# and l = set of particle-indices without z
 	# and q0,q1,q2,q3,q4,q5, ... = x1,x2,x3,y1,y2,y3,...
-	# r_kl = sum(over particle indices) (q_3i+k-q_3i+l)^2 is
+	# r_zl = sum(over particle indices) (q_3i+z-q_3i+l)^2 is
 	# the square distance between two interacting particles
 	# 
 	# [data]	Expects a +Nbsim::Database+ object.
@@ -60,7 +62,6 @@ class Simulator
 				@@data[t+1][j] = 2 * @@data[t][j] - @@data[t-1][j] + ( f(t,j) * H**2)
 			end
 		end
-
 	end
 
 
@@ -69,20 +70,25 @@ private
 	def self.f(t,j)
 		
 		k = j/@@data.n
+		z = j.modulo(@@data.n)
 
 		res = 0
 		(0..@@data.n-1).each do |l|
-			res -= (@@data.mass(l) * (@@data[t][j] - @@data[t][@@data.n*k+l])) / ( r(t,k,l) ** (3/2)) unless l == k
+			res -= (@@data.mass(l) * (@@data[t][j] - @@data[t][@@data.n*k+l])) / ( r(t,z,l) ** (1)) unless l == z
 		end
 
 		return G*res
 	end
 
 	def self.r(t,k,l)
-
+		
 		res = 0
-		(0..@@data.n-1).each do |i|
-			res += (@@data[t][@@data.dof*i+k] - @@data[t][@@data.dof*i+l]) ** 2
+		(0..@@data.dof-1).each do |i|
+			res += (@@data[t][@@data.n*i+k] - @@data[t][@@data.n*i+l]) ** 2
+		end
+
+		if res < THRESHOLD
+			res = THRESHOLD
 		end
 
 		return res
