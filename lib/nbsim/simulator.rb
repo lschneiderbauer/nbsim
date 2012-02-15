@@ -11,21 +11,6 @@ class Simulator
 	H = 0.1		# Step size
 	THRESHOLD = 100	# Maximum square distance, where force stays constant (because of numerical divergences)
 
-	# Initializes the simulator, with following parameters:
-	#
-	# [data]	Expects a +Nbsim::Database+ object.
-	# 		Obviously the initial conditions should be set, otherwise the
-	# 		simulators output will be the trivial solutions.
-	# 		This data object gets manipulated by the simulator.
-	# 
-	#def initialize(data)
-#
-#		@data = data
-#
-#		simulate
-#		return @data
-#	end
-
 
 	# Starts the actual calculations and returns an 2d data array.
 	# (same format as initial conditions but with #+timesteps+ entries.
