@@ -10,21 +10,34 @@ class Main_qt < Qt::Widget
 
 		# create data
 		timesteps = 10000
-		n = 3
-		dof = 2
+		n = 4
+		dof = 3
 		 
 		data = Nbsim::Database.new(timesteps, n, dof)
-		data.set_init_cond(0, [100, -90])
-		data.set_init_cond(1, [300, -40])
-		data.set_init_cond(2, [0, 0])
+		data.set_init_cond(0, [0, 0,0])
+		data.set_init_cond(1, [0, 100,0])
+		data.set_init_cond(2, [0, 300,0])
+		data.set_init_cond(3, [0, 500,0])
+		#data.set_init_cond(4, [150,0,0])
+		#data.set_init_cond(5, [-150,0,0])
 
-		data.set_mass(0, 3)
-		data.set_mass(1, 7)
-		data.set_mass(2, 13)
+		data.set_init_velo(0, [0,0,0])
+		data.set_init_velo(1, [0,0,5])
+		data.set_init_velo(2, [5,0,0])
+		data.set_init_velo(3, [5,0,0])
+		#data.set_init_velo(0, [-5,0,1])
+		#data.set_init_velo(1, [5,0,1])
+		#data.set_init_velo(4, [0,5,0])
+		#data.set_init_velo(5, [0,-5,0])
+
+		data.set_mass(0, 80)
+		data.set_mass(1, 6)
+		data.set_mass(2, 3)
+		data.set_mass(3, 9)
+		#data.set_mass(4, 5)
+		#data.set_mass(5, 5)
 		 
 		Nbsim::Simulator.do(data)
-
-
 
 
 		@visualizer = Nbsim::Visualizer_qt.new(self,data)
@@ -34,23 +47,30 @@ class Main_qt < Qt::Widget
 		@slider.minimum = 0
 		@slider.maximum = data.timesteps-1
 		@slider.connect(:sliderPressed, self, :slider_pressed)
-		@slider.connect(:sliderReleased, self, :slider_released)
 		@slider.connect(SIGNAL('sliderMoved(int)'), self, :slider_moved)
 
-		@c_button = Qt::PushButton.new("pause/resume")
-		@c_button.connect(:clicked, self, :c_button_clicked)
+		#@l_speed = Qt::Label.new("speed ")
+		#@l_speed.height = 100
 
-		sublayout = Qt::HBoxLayout.new
-		sublayout.add_widget(@c_button)
-		sublayout.add_widget(@slider)
+		sub_layout = Qt::HBoxLayout.new
+		sub_layout.add_widget(@slider)
+		#sub_layout.add_widget(@l_speed)
 
-		layout = Qt::VBoxLayout.new
-		layout.add_widget(@visualizer)
-		layout.add_layout(sublayout)
+		main_layout = Qt::VBoxLayout.new
+		main_layout.add_widget(@visualizer)
+		main_layout.add_layout(sub_layout)
 
-		self.set_layout(layout)
+		self.set_layout(main_layout)
+	end
 
-
+	def keyPressEvent(event)
+		case event.key
+		when Qt::Key_Space:	@visualizer.toggle
+		when Qt::Key_J:		@visualizer.change_view
+		when Qt::Key_K:		@visualizer.change_view(false)
+		when Qt::Key_Plus:		@visualizer.change_speed
+		when Qt::Key_Minus:		@visualizer.change_speed(false)
+		end
 	end
 
 
@@ -62,16 +82,8 @@ class Main_qt < Qt::Widget
 		@visualizer.pause
 	end
 
-	def slider_released
-		@visualizer.resume
-	end
-
 	def slider_moved(value)
 		@visualizer.set_time(value)
-	end
-
-	def c_button_clicked
-		@visualizer.pause_or_resume
 	end
 
 end
