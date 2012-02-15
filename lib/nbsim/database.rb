@@ -111,6 +111,28 @@ class Database
 	end
 
 	# Returns an array of length of the number of degrees of freedom set in +Database.new+
+	# with the velocity from a specific particle in a specific time.
+	#
+	# [particle]	Selects the particle.
+	# 		The allowed range is 0 to the number of particles set
+	# 		in +Database.new+ minus 1.
+	#
+	# [time]	Selects the time.
+	# 		The allowed range is 0 to to the number of timesteps
+	# 		set in +Database.new+ minus 1.
+	def get_velo(particle, time)
+		check_particle(particle)
+		check_time(time)
+
+		r0 = self.get_coords(particle,time)
+		r1 = (time == 0 ? r0 : self.get_coords(particle,time-1))
+		v = []
+		(0..@dof-1).each { |i| v[i] = r0[i] - r1[i] }
+
+		return v
+	end
+
+	# Returns an array of length of the number of degrees of freedom set in +Database.new+
 	# with the coordinates of the center of mass in a specific time.
 	#
 	# [time]	Selects the time.
